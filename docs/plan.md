@@ -21,7 +21,7 @@ The best dog day is often two or three days after a storm, when the snow has set
 
 ## Where
 
-A home base in south-west Poland (kept in config, not in the repo), and ranges by reach:
+A home base in south-west Poland (kept in D1 with the user's settings, not in the repo), and ranges by reach:
 
 - **Local, up to about 4 hours:** Karkonosze / Krkonoše, Jeseníky, Śnieżnik and Czarna Góra, the Beskids, the Tatras (Polish and Slovak)
 - **Long drive:** Dachstein / Krippenstein, the Alps

@@ -10,6 +10,11 @@ Scoring needs snowfall, snow depth, temperature, freezing level, wind, cloud and
 Use Open-Meteo for all weather data: the forecast API with the `elevation` parameter set to each spot's top, `past_days` for the snowpack, the ensemble API for 4–15 day windows, and pressure-level variables for fronts. Requests are batched: all spots in one call per data type.
 
 ## Consequences
-- Free for non-commercial use, about 10,000 calls a day; powdog needs a few dozen.
-- Its limits are per IP, and Workers share outgoing IPs; batching keeps the risk low. If runs get throttled, the fallback is to collect from a scheduled GitHub Action.
+- Free for non-commercial use, about 10,000 calls a day. Batching saves round trips, not quota: each location counts as a call, and a request with more than 10 variables or more than two weeks of data counts as several. A rough budget for ~20 spots:
+  - forecast with 3 models and ~15 variables, every 2 hours: ~20 × 3–4 weighted calls × 12 runs ≈ 700–1,000 a day;
+  - past weather (`past_days=92`) and the ensemble, **once a day** (ADR 0005): ~20 × 10–20 weighted calls ≈ 200–400 a day;
+  - pressure levels for fronts, every 6 hours: ~20 × 2 × 4 ≈ 160 a day.
+
+  About 1,000–1,600 a day, well under the limit. Step 1 measures the real weighting, and the wider catalogue in step 8 has to fit the remaining budget.
+- Its limits are per IP, and Workers share outgoing IPs; staying far below the limit keeps the risk low. If runs get throttled, the fallback is to collect from a scheduled GitHub Action.
 - A public page (step 11) needs its terms checked first. Open-Meteo is open source and can be self-hosted if it ever has to be (ADR 0010).
