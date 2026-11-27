@@ -18,3 +18,4 @@ npm test
 - [`docs/architecture.md`](docs/architecture.md): how it's put together
 - [`docs/adr/`](docs/adr/README.md): why it's built this way
 - Planned work: [GitHub issues](https://github.com/adamchrabaszcz/powdog/issues)
+- Security problems: [`SECURITY.md`](SECURITY.md)
