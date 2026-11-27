@@ -1,5 +1,7 @@
 # powdog
 
+<img src="docs/brand/logo-colour.svg" alt="powdog logo: a folded-paper dog head in ski goggles" width="120">
+
 [![test](https://github.com/adamchrabaszcz/powdog/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/adamchrabaszcz/powdog/actions/workflows/test.yml)
 
 Powder radar for lift, splitboard and dog tours: where and when the best snow is, from free forecasts and avalanche bulletins, in the macOS menu bar, a web dashboard and phone notifications.
