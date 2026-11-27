@@ -30,4 +30,5 @@ macOS             ─► a SwiftBar script that reads /api/latest.json
 | `.github/workflows/` | CI, the format check, releases and the Claude review |
 | `docs/` | This file and the decision records |
 | `docs/brand/` | The logo in colour and one ink, and the simple icon |
-| `package.json` | Node scripts (`npm test`); dependencies come with the first code |
+| `src/core/` | The model, scoring and snowpack: plain TypeScript, no Cloudflare APIs (ADR 0010); tests sit next to the code as `*.test.ts` |
+| `package.json`, `tsconfig.json` | Scripts and the strict TypeScript setup; `npm test` runs the typecheck and the Vitest tests |
