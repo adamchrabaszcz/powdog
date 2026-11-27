@@ -9,7 +9,9 @@ Scoring needs snowfall, snow depth, temperature, freezing level, wind, cloud and
 ## Decision
 Use Open-Meteo for all weather data: the forecast API with the `elevation` parameter set to each spot's top, `past_days` for the snowpack, the ensemble API for 4–15 day windows, and pressure-level variables for fronts. Requests are batched: all spots in one call per data type.
 
-Forecasts are fetched **4 times a day**, shortly after new model runs are published (ECMWF and GFS run every 6 hours): at about 05:00, 11:00, 17:00 and 23:00 Polish time. The 05:00 run feeds the "go today?" notification. Pressure levels come with these runs; past weather and the ensemble are fetched once a day.
+Forecasts are fetched **4 times a day**, shortly after new model runs are published (ECMWF and GFS run every 6 hours): at about 05:00, 11:00, 17:00 and 23:00 Polish time. The 05:00 run feeds the "go today?" notification.
+
+Cloudflare cron triggers run on UTC, and times are stored in UTC (`AGENTS.md`), so the schedule is `0 4,10,16,22 * * *`. That's 05:00 local in winter (CET) and 06:00 in summer (CEST); the shift doesn't matter for a winter app. Open-Meteo publishes ECMWF runs a few hours later than GFS, so the 04:00 UTC run may still carry the previous evening's ECMWF run rather than the overnight one; the "go today?" text says which model run it uses, and step 1 measures the real publishing times. Pressure levels come with these runs; past weather and the ensemble are fetched once a day.
 
 ## Consequences
 - Free for non-commercial use, about 10,000 calls a day. Batching saves round trips, not quota: each location counts as a call, and a request with more than 10 variables or more than two weeks of data counts as several. A rough budget for ~20 spots:
