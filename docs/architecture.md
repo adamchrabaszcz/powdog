@@ -1,6 +1,6 @@
 # Architecture
 
-How powdog is put together. Why it's built this way is in `docs/adr/`; what it's for and in what order it's built is in [`plan.md`](plan.md).
+How powdog is put together. Why it's built this way is in `docs/adr/`; what gets built next is in the [GitHub issues](https://github.com/adamchrabaszcz/powdog/issues).
 
 Keep this to what a newcomer needs before changing something: the parts, where each lives, how data flows between them. Update it in the pull request that changes the structure.
 
@@ -28,6 +28,6 @@ macOS             ─► a SwiftBar script that reads /api/latest.json
 | Path | What |
 | --- | --- |
 | `.github/workflows/` | CI, the format check, releases and the Claude review |
-| `docs/` | This file, the plan and the decision records |
+| `docs/` | This file and the decision records |
 | `docs/brand/` | The logo in colour and one ink, and the simple icon |
 | `package.json` | Node scripts (`npm test`); dependencies come with the first code |

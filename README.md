@@ -15,7 +15,6 @@ npm test
 
 ## Docs
 
-- [`docs/plan.md`](docs/plan.md): what it's for, what it does, the build order
 - [`CONTRIBUTING.md`](CONTRIBUTING.md): how to work here
 - [`AGENTS.md`](AGENTS.md): the short version for coding agents
 - [`docs/architecture.md`](docs/architecture.md): how it's put together
