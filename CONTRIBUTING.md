@@ -1,5 +1,7 @@
 # Contributing
 
+Contributions are welcome: new spots and avalanche regions, better scoring, fixes. By contributing you agree that your work is published under the project's [MIT licence](LICENSE). Everyone follows the [Code of Conduct](CODE_OF_CONDUCT.md). Security problems go through [`SECURITY.md`](SECURITY.md), not public issues.
+
 Where things are written down: `AGENTS.md` (the short version, also for coding agents), `docs/architecture.md` (structure), `docs/adr/` (decisions, numbered, never deleted).
 
 ## Workflow
