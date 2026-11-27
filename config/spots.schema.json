@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/adamchrabaszcz/powdog/config/spots.schema.json",
+  "title": "powdog spot catalogue",
+  "description": "Shared spots, the same for every user. Personal data (home base, drive times, favourites) never goes here; it lives in D1 (ADR 0009).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["spots"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "spots": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/spot" }
+    }
+  },
+  "$defs": {
+    "spot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "country", "range", "lat", "lon", "topElevationM", "baseElevationM", "lifts", "avalanche", "dogs", "webcams"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "description": "Stable key, lowercase with hyphens; never reused." },
+        "name": { "type": "string", "minLength": 1 },
+        "country": { "enum": ["PL", "CZ", "SK", "AT", "CH", "IT", "FR", "DE"] },
+        "range": { "type": "string", "minLength": 1, "description": "Mountain range, as riders name it." },
+        "lat": { "type": "number", "minimum": 35, "maximum": 72, "description": "Degrees north (Europe)." },
+        "lon": { "type": "number", "minimum": -11, "maximum": 45, "description": "Degrees east (Europe)." },
+        "topElevationM": { "type": "integer", "minimum": 300, "maximum": 4810, "description": "Highest rideable point, metres above sea level; forecasts are taken here." },
+        "baseElevationM": { "type": "integer", "minimum": 0, "maximum": 4000, "description": "Bottom of the riding, metres above sea level." },
+        "lifts": { "type": "boolean", "description": "Lift-served riding exists (lift mode only scores spots with lifts)." },
+        "avalanche": {
+          "description": "EAWS bulletin for this spot, or null where no bulletin exists (ADR 0004).",
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["feed", "region"],
+              "properties": {
+                "feed": { "type": "string", "pattern": "^[A-Z]{2}(-[0-9]{2})?(-[0-9]{2})?$", "description": "The feed file name, e.g. CZ, SK, PL-12, AT-04." },
+                "region": { "type": "string", "pattern": "^[A-Z]{2}(-[0-9]{2}){0,2}(-[A-Z]{2})?$", "description": "The micro-region ID inside the feed, e.g. CZ-04, AT-04-01." }
+              }
+            }
+          ]
+        },
+        "dogs": { "enum": ["allowed", "leash", "banned", "unknown"], "description": "Dog rules for the riding area (national parks differ)." },
+        "webcams": { "type": "array", "items": { "type": "string", "format": "uri", "pattern": "^https://" } },
+        "verify": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Fields whose values still need checking against a primary source."
+        }
+      }
+    }
+  }
+}
