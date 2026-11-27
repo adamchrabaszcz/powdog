@@ -20,3 +20,7 @@ npm test
 - [`docs/architecture.md`](docs/architecture.md): how it's put together
 - [`docs/adr/`](docs/adr/README.md): why it's built this way
 - Planned work: [GitHub issues](https://github.com/adamchrabaszcz/powdog/issues)
+
+## Licence
+
+The code is under the [MIT licence](LICENSE). The powdog name and the logo (the files in `docs/brand/`) are not covered by it: please don't use them for your own copy or fork.
