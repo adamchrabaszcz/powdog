@@ -7,7 +7,7 @@ Keep this to what a newcomer needs before changing something: the parts, where e
 ## The parts (planned)
 
 ```
-Cron, every 2 h ─► Worker: scheduled()
+Cron, 4× a day ─► Worker: scheduled()   (+ once a day: past weather and ensemble)
                    ├─ Open-Meteo: forecast, ensemble, past weather, pressure levels (batched, summit elevation)
                    ├─ EAWS feed: avalanche danger per region
                    ├─ core: snowpack model, front detection, scoring per riding mode

@@ -4,7 +4,7 @@
 - Date: 2026-11-27
 
 ## Context
-powdog needs a job that runs every couple of hours, a small API, a dashboard and a place to keep a little state, all free. A Mac-only script (launchd) would work for one person but not online, on a phone or for friends.
+powdog needs a job that runs a few times a day (4 forecast runs, ADR 0003), a small API, a dashboard and a place to keep a little state, all free. A Mac-only script (launchd) would work for one person but not online, on a phone or for friends.
 
 ## Decision
 One Cloudflare Worker: Cron Triggers run the collector, `fetch()` serves `/api/*`, and the dashboard is served as the Worker's static assets. State lives in KV (latest results, alerts already sent) and D1 (catalogue, history, personal data). Cloudflare Access protects the dashboard and the API. Pull requests get preview deployments.
