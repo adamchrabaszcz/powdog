@@ -114,7 +114,12 @@ function rawLocations(json: unknown, expected: number, problems: string[]): RawL
     problems.push(`Open-Meteo error: ${String((json as { reason?: unknown }).reason ?? 'unknown')}`);
     return null;
   }
-  const list = Array.isArray(json) ? json : [json];
+  const list: unknown[] = Array.isArray(json) ? json : [json];
+  // A failed or empty fetch can hand us null, a string or nulls inside the list: report, don't crash.
+  if (!list.every((r) => r !== null && typeof r === 'object' && !Array.isArray(r))) {
+    problems.push('Open-Meteo returned no usable data');
+    return null;
+  }
   if (list.length !== expected) {
     problems.push(`expected ${expected} locations, got ${list.length}`);
     return null;

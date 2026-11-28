@@ -107,6 +107,24 @@ describe('parseForecast', () => {
     expect(r.problems).toEqual(['Open-Meteo error: Parameter elevation is out of range']);
   });
 
+  it.each([
+    ['null', null],
+    ['undefined', undefined],
+    ['a string', 'Bad Gateway'],
+    ['nulls in the list', [null, null]],
+    ['one null in the list', [forecastFixture[0], null]],
+  ])('reports %s as no usable data instead of crashing', (_label, body) => {
+    const r = parseForecast(body, forecastQuery);
+    expect(r.series).toEqual([]);
+    expect(r.problems).toEqual(['Open-Meteo returned no usable data']);
+    expect(parseEnsemble(body, ensembleQuery).problems).toEqual(['Open-Meteo returned no usable data']);
+  });
+
+  it('reports a single null for a one-spot query instead of crashing', () => {
+    const r = parseForecast(null, { ...forecastQuery, locations: [locations[0]!] });
+    expect(r.problems).toEqual(['Open-Meteo returned no usable data']);
+  });
+
   it('reports a response for the wrong number of spots', () => {
     const r = parseForecast([forecastFixture[0]], forecastQuery);
     expect(r.series).toEqual([]);
