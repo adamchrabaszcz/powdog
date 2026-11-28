@@ -36,3 +36,4 @@ What becomes easier, what becomes harder, what we now have to keep doing.
 - [0008. Free only](0008-free-only.md)
 - [0009. Ready for more users from day one](0009-multi-user-ready.md)
 - [0010. Portability and growth](0010-portability-and-growth.md)
+- [0011. Modular code that follows SOLID](0011-modular-solid-code.md)
