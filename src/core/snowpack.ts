@@ -36,6 +36,8 @@ export interface Snowpack {
   };
   /** Hours with no temperature; they're skipped, not guessed. */
   missingHours: number;
+  /** Hours with a temperature but no snowfall value. They add no snow, and are counted so a gap shows up instead of passing as a dry spell. */
+  missingSnowfallHours: number;
 }
 
 // Rules of thumb, kept together so a change is visible in one place.
@@ -89,6 +91,7 @@ interface Layer {
 export function buildSnowpack(hours: WeatherHour[]): Snowpack {
   const layers: Layer[] = [];
   let missingHours = 0;
+  let missingSnowfallHours = 0;
   let thawRun = 0;
   let thawedSinceFreeze = false;
   let crustHour: number | null = null;
@@ -103,6 +106,7 @@ export function buildSnowpack(hours: WeatherHour[]): Snowpack {
       missingHours++;
       return;
     }
+    if (h.snowfallCm === null) missingSnowfallHours++;
     const snow = h.snowfallCm ?? 0;
     const rain = h.rainMm ?? 0;
 
@@ -178,6 +182,7 @@ export function buildSnowpack(hours: WeatherHour[]): Snowpack {
     surface,
     flags: { crust, newSnowOnCrust, rainOnSnow, windPacked },
     missingHours,
+    missingSnowfallHours,
   };
 }
 

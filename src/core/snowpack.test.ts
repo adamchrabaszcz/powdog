@@ -108,6 +108,12 @@ describe('buildSnowpack', () => {
     expect(p.newSnow72hCm).toBe(0);
   });
 
+  it('counts hours without a snowfall value, so a gap is not read as a dry spell', () => {
+    const p = buildSnowpack(timed([...base(), ...hours(6, { temperatureC: -5, snowfallCm: null })]));
+    expect(p.missingSnowfallHours).toBe(6);
+    expect(p.missingHours).toBe(0);
+  });
+
   it('snow older than 72 hours counts as base, not new snow', () => {
     const p = buildSnowpack(timed([...hours(10, { temperatureC: -8, snowfallCm: 2 }), ...hours(80, { temperatureC: -8 })]));
     expect(p.newSnow72hCm).toBe(0);
