@@ -32,4 +32,6 @@ macOS             ─► a SwiftBar script that reads /api/latest.json
 | `docs/brand/` | The logo in colour and one ink, and the simple icon |
 | `config/` | Versioned shared config: the spot catalogue (`spots.json`) and its JSON Schema, and the scoring weights (`scoring.json`); never personal data |
 | `src/core/` | The model, scoring and snowpack: plain TypeScript, no Cloudflare APIs (ADR 0010); tests sit next to the code as `*.test.ts` |
-| `package.json`, `tsconfig.json` | Scripts and the strict TypeScript setup; `npm test` runs the typecheck and the Vitest tests |
+| `src/core/picks/` | The local pipeline: real data → per-spot days → scores → the text report |
+| `src/cli/` | Command-line entry points, the only code with I/O so far (`npm run picks` fetches and prints) |
+| `package.json`, `tsconfig.json`, `tsconfig.cli.json` | Scripts and the strict TypeScript setup: the core has no `fetch` or `console`, the CLI config adds them; `npm test` runs both typechecks and the Vitest tests |

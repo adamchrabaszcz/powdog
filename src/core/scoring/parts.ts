@@ -1,6 +1,6 @@
 // Small helpers every mode uses: turning measurements into points, collecting reasons, confidence.
 
-import type { Confidence } from './types.ts';
+import type { AvalancheLevel, Confidence } from './types.ts';
 import type { ScoringSettings } from './settings.ts';
 
 /** value / full, clamped to 0–1. */
@@ -45,6 +45,15 @@ export function confidenceOf(snowSpreadCm: number | null, s: ScoringSettings): C
 /** How sunny the day is, 0–1, from mean cloud; unknown counts as half. */
 export const sunniness = (cloudPct: number | null) => (cloudPct === null ? 0.5 : 1 - fraction(cloudPct, 100));
 
+/** The level when there is one; null for "no bulletin" and for "not available" alike. */
+export const knownLevel = (a: AvalancheLevel): number | null => (typeof a === 'number' ? a : null);
+
 /** The avalanche line every mode shows, whatever the score. */
-export const avalancheNote = (level: number | null) =>
-  level === null ? 'no avalanche bulletin here: judge the snowpack yourself' : `avalanche danger ${level}`;
+export function avalancheNote(a: AvalancheLevel): string {
+  if (a === null) return 'no avalanche bulletin here: judge the snowpack yourself';
+  if (a === 'unknown') return 'avalanche level not available: check the bulletin before going';
+  return `avalanche danger ${a}`;
+}
+
+/** Why there's no level to go by, for the penalty reason. */
+export const missingLevelReason = (a: AvalancheLevel) => (a === null ? 'no bulletin' : 'bulletin not loaded');

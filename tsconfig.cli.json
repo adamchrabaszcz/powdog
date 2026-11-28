@@ -1,0 +1,9 @@
+{
+  // The command-line entry points: the only code allowed `fetch` and `console`. The core keeps
+  // the plain ES library (tsconfig.json), so it can't reach for I/O by accident (ADR 0010, 0011).
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM"]
+  },
+  "include": ["src/cli"]
+}

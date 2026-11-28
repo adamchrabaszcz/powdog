@@ -6,8 +6,9 @@
     "node": ">=24"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "test": "tsc --noEmit && vitest run"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.cli.json",
+    "test": "npm run typecheck && vitest run",
+    "picks": "node --disable-warning=ExperimentalWarning src/cli/picks.ts"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261127.1",
