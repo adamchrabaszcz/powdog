@@ -13,7 +13,7 @@ export type { LocalHour } from './day.ts';
 export { DEFAULT_SCORING, withOverrides } from './settings.ts';
 export type { ScoringSettings } from './settings.ts';
 export { MODES } from './types.ts';
-export type { Confidence, DaytimeWeather, Mode, Score, SpotDay } from './types.ts';
+export type { AvalancheLevel, Confidence, DaytimeWeather, Mode, Score, SpotDay } from './types.ts';
 
 const byMode: Record<Mode, (d: SpotDay, s: ScoringSettings) => Tally> = {
   lift: scoreLift,

@@ -138,6 +138,24 @@ describe('avalanche information is never dropped', () => {
     expect(s).toMatchObject({ excluded: true, avalancheLevel: 3, reasons: ['no lifts here', 'avalanche danger 3'] });
   });
 
+  it('never says "no bulletin" for a spot whose bulletin just isn’t loaded', () => {
+    for (const mode of ['lift', 'splitboard', 'dog'] as const) {
+      const s = scoreDay(day('a', { snowpack: powder, avalancheLevel: 'unknown' }), mode);
+      expect(s.avalancheLevel).toBe('unknown');
+      const reasons = s.reasons.join(' | ');
+      expect(reasons).toMatch(/avalanche level not available: check the bulletin/);
+      expect(reasons).not.toMatch(/no avalanche bulletin here|no bulletin:/);
+    }
+  });
+
+  it('treats a level it doesn’t have with the same caution as no bulletin', () => {
+    const settled = snowpack({ depthCm: 50, newSnow72hCm: 10 });
+    const none = scoreDay(day('a', { snowpack: settled, hoursSinceSnowfall: 60, avalancheLevel: null }), 'dog');
+    const unknown = scoreDay(day('a', { snowpack: settled, hoursSinceSnowfall: 60, avalancheLevel: 'unknown' }), 'dog');
+    expect(unknown.excluded).toBe(false);
+    expect(unknown.score).toBe(none.score);
+  });
+
   it('says so when there is no bulletin, in every mode', () => {
     for (const mode of ['lift', 'splitboard', 'dog'] as const) {
       const s = scoreDay(day('a', { snowpack: powder, avalancheLevel: null }), mode);

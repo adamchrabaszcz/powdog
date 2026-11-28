@@ -16,7 +16,7 @@ Cloudflare cron triggers run on UTC, and times are stored in UTC (`AGENTS.md`), 
 ## Consequences
 - Free for non-commercial use, about 10,000 calls a day. Batching saves round trips, not quota: each location counts as a call, and a request with more than 10 variables or more than two weeks of data counts as several. A rough budget for ~20 spots:
   - forecast with 3 models and ~15 variables, 4 runs: ~20 × 3–4 weighted calls × 4 ≈ 240–320 a day;
-  - past weather (`past_days=92`) and the ensemble, once a day (ADR 0005): ~20 × 10–20 weighted calls ≈ 200–400 a day;
+  - past weather (`past_days=60`, about what the forecast API keeps, ADR 0005) and the ensemble, once a day: ~20 × 10–20 weighted calls ≈ 200–400 a day;
   - pressure levels for fronts, with the 4 runs: ~20 × 2 × 4 ≈ 160 a day.
 
   About 600–900 a day, well under the limit. Fetching more often would mostly download the same model run again. Step 1 measures the real weighting, and the wider catalogue in step 8 has to fit the remaining budget.

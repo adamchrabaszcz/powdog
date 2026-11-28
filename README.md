@@ -13,6 +13,14 @@ npm ci
 npm test
 ```
 
+### Today's picks, on your machine
+
+```sh
+npm run picks
+```
+
+Fetches the latest forecasts for every spot in `config/spots.json` from Open-Meteo, builds each spot's snowpack and prints the top 3 spots per riding mode (lift, splitboard, splitboard with the dog) for today and the next two days, with the reasons and how sure the forecast is. It needs Node 24 and an internet connection, and makes one request to Open-Meteo. Avalanche levels aren't read yet: where a bulletin exists, check it yourself.
+
 ## Docs
 
 - [`CONTRIBUTING.md`](CONTRIBUTING.md): how to work here
