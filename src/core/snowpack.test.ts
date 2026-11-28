@@ -72,6 +72,13 @@ describe('buildSnowpack', () => {
     expect(p.surface).toBe('old');
   });
 
+  it('reports new snow as it fell and depth as settled, so depth can be the smaller number', () => {
+    const p = buildSnowpack(timed([...hours(24, { temperatureC: -12, snowfallCm: 1.25 }), ...hours(40, { temperatureC: -12 })]));
+    expect(p.newSnow72hCm).toBe(30); // as fallen
+    expect(p.depthCm).toBeLessThan(p.newSnow72hCm); // settled
+    expect(p.depthCm).toBeGreaterThan(10);
+  });
+
   it('settling has no jump at 72 hours', () => {
     const at = (h: number) =>
       buildSnowpack(timed([...hours(10, { temperatureC: -8, snowfallCm: 2 }), ...hours(h, { temperatureC: -8 })])).depthCm;

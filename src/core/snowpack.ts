@@ -17,9 +17,14 @@ export type Surface = 'none' | 'powder' | 'wind-packed' | 'crust' | 'wet' | 'old
 export type Quality = 'light' | 'medium' | 'heavy';
 
 export interface Snowpack {
-  /** Estimated total depth, cm. */
+  /**
+   * Estimated total depth now, cm, **settled**: every layer at its density for its age.
+   * It can be less than the new snow below, because fresh snow settles within days.
+   */
   depthCm: number;
+  /** New snow in the last 24 h, cm, **as it fell** (before settling), the way snowfall is usually reported. */
   newSnow24hCm: number;
+  /** New snow in the last 72 h, cm, **as it fell** (before settling). */
   newSnow72hCm: number;
   /** How light the new snow of the last 72 h is; null when there is none. */
   newSnowQuality: Quality | null;
