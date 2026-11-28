@@ -95,4 +95,11 @@ describe('snowSpreadCm: confidence comes from the snow the score counts', () => 
   it('is null with fewer than two models covering the window', () => {
     expect(snowSpreadCm(series({ gfs_seamless: flat(0.2) }), local, '2026-12-13', DEFAULT_SCORING)).toBeNull();
   });
+
+  it('is null, not a shorter window, when the series starts less than 72 h before 08:00', () => {
+    // Without past days the series starts at midnight UTC on the scored day: 08:00 local is hour 7.
+    // A 2 cm/h vs 0 cm/h disagreement must not shrink to a 7-hour spread and look like medium confidence.
+    const s = series({ ecmwf_ifs025: flat(2), gfs_seamless: flat(0) });
+    expect(snowSpreadCm(s, local, '2026-12-10', DEFAULT_SCORING)).toBeNull();
+  });
 });

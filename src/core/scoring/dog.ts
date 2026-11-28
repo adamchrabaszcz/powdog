@@ -26,7 +26,8 @@ export function scoreDog(d: SpotDay, s: ScoringSettings): Tally {
   // Deep snow is fine once it has settled on a base; until then the whole storm counts, not just the last 24 h.
   const settled = d.hoursSinceSnowfall !== null && d.hoursSinceSnowfall >= g.settledAfterHours && p.depthCm >= g.minBaseCm;
   if (p.newSnow72hCm > g.maxFreshCm && !settled) exclude(t, `${p.newSnow72hCm} cm of new snow, not settled yet: too deep for the dog`);
-  if (p.depthCm < g.minBaseCm && p.newSnow72hCm === 0) exclude(t, `base ${p.depthCm} cm: not enough snow`);
+  // Depth already includes any new snow, so a dusting on bare ground doesn't pass.
+  if (p.depthCm < g.minBaseCm) exclude(t, `${p.depthCm} cm of snow: not enough to tour on`);
 
   add(t, c.weights.sun * sunniness(w.cloudMeanPct), w.cloudMeanPct === null ? 'no cloud data' : `${Math.round(100 - w.cloudMeanPct)}% sun`);
   add(t, c.weights.calm * (1 - fraction(w.windMaxKmh ?? g.maxWindKmh, g.maxWindKmh)), `wind ${Math.round(w.windMaxKmh ?? 0)} km/h`);

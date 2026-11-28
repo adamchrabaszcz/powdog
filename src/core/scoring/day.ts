@@ -84,12 +84,14 @@ export const SPREAD_WINDOW_HOURS = 72;
 /**
  * How far apart the models are on the snow the score counts: each model's total over the 72 h up to
  * the start of the daytime window (08:00), max − min. Only models with a value for every hour of that
- * window count, so a model whose horizon ends early can't inflate the spread; null with fewer than two.
+ * window count, so a model whose horizon ends early can't inflate the spread; null with fewer than two,
+ * and null when the series doesn't reach 72 h before 08:00.
  */
 export function snowSpreadCm(series: SpotSeries, local: LocalHour[], date: string, s: ScoringSettings): number | null {
   const morning = local.findIndex((h) => h.date === date && h.hour === s.daytime.fromHour);
-  if (morning < 0) return null;
-  const from = Math.max(0, morning - SPREAD_WINDOW_HOURS);
+  // A series that doesn't reach 72 h back can't measure the spread: unknown, so low confidence.
+  if (morning < SPREAD_WINDOW_HOURS) return null;
+  const from = morning - SPREAD_WINDOW_HOURS;
   const totals = modelSeries(series, 'snowfall')
     .map((v) => v.slice(from, morning))
     .filter((w) => w.length > 0 && w.every((x) => typeof x === 'number'))

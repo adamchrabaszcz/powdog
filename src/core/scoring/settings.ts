@@ -8,7 +8,7 @@ export interface ScoringSettings {
   daytime: { fromHour: number; toHour: number; timeZone: string };
   /** How good each new-snow quality is, 0–1. */
   quality: Record<Quality, number>;
-  /** Model spread on the day's snowfall: below `highBelowSpreadCm` is high confidence, from `lowFromSpreadCm` low. */
+  /** Models' spread on the snow of the 72 h up to 08:00: below `highBelowSpreadCm` is high confidence, from `lowFromSpreadCm` low. */
   confidence: { highBelowSpreadCm: number; lowFromSpreadCm: number };
   lift: {
     weights: { newSnow: number; quality: number; base: number; visibility: number; weekday: number };

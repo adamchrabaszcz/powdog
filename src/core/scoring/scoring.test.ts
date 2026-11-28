@@ -95,6 +95,7 @@ describe('dog mode', () => {
     ['very cold', { daytime: { tempMinC: -20 } as SpotDay['daytime'] }, /too cold/],
     ['no temperature data', { daytime: { tempMinC: null } as SpotDay['daytime'] }, /no temperature data/],
     ['deep fresh snow', { snowpack: powder, hoursSinceSnowfall: 2 }, /too deep for the dog/],
+    ['a dusting on bare ground', { snowpack: snowpack({ depthCm: 1, newSnow24hCm: 1, newSnow72hCm: 1 }), hoursSinceSnowfall: 60 }, /not enough to tour on/],
     // 40 cm that stopped 30 h ago: nothing in the last 24 h, but not settled yet either.
     ['a deep storm 30 h ago', { snowpack: snowpack({ depthCm: 60, newSnow24hCm: 0, newSnow72hCm: 40 }), hoursSinceSnowfall: 30 }, /not settled yet/],
   ])('excludes a day that fails a hard rule: %s', (_label, over, reason) => {
