@@ -115,6 +115,12 @@ describe('summaries', () => {
     expect(lines).toEqual(['snowfall from icon_d2 has 45 of 1512 hours missing (2 spots, e.g. a)', 'c: rain from gfs_seamless is empty']);
   });
 
+  it('never drops the avalanche danger from the reason', () => {
+    const why = whyNothing(['avalanche danger 4: not a touring day', 'avalanche danger 4: not a touring day']);
+    expect(why).toEqual(['avalanche danger 4: not a touring day (2 spots)']);
+    expect(whyNothing(['avalanche danger 3: too high for the dog'])[0]).toMatch(/avalanche danger 3/);
+  });
+
   it('says why nothing was picked, most common reason first', () => {
     expect(whyNothing(['82% cloud: not sunny enough', '64% cloud: not sunny enough', 'dogs are not allowed here'])).toEqual([
       'not sunny enough (2 spots)',

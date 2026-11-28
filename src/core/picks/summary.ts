@@ -35,5 +35,14 @@ export function summariseProblems(problems: string[]): string[] {
 export function whyNothing(excludedReasons: string[], top = 2): string[] {
   return group(excludedReasons)
     .slice(0, top)
-    .map(({ example, count }) => `${example.replace(/^[^:]*\d[^:]*: /, '')} (${count} ${count === 1 ? 'spot' : 'spots'})`);
+    .map(({ example, count }) => `${withoutMeasurement(example)} (${count} ${count === 1 ? 'spot' : 'spots'})`);
+}
+
+/**
+ * Drops a leading measurement ("82% cloud: ", "5.3 cm of snow: ") so look-alike reasons read as one,
+ * but never the avalanche danger: that prefix is the reason itself and is never hidden (AGENTS.md).
+ */
+function withoutMeasurement(reason: string): string {
+  if (/avalanche/i.test(reason)) return reason;
+  return reason.replace(/^[^:]*\d[^:]*: /, '');
 }
