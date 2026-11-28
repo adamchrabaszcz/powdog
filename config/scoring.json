@@ -1,0 +1,42 @@
+{
+  "daytime": { "fromHour": 8, "toHour": 16, "timeZone": "Europe/Warsaw" },
+  "quality": { "light": 1, "medium": 0.7, "heavy": 0.4 },
+  "confidence": { "highBelowSpreadCm": 5, "lowFromSpreadCm": 20 },
+  "lift": {
+    "weights": { "newSnow": 50, "quality": 15, "base": 20, "visibility": 10, "weekday": 5 },
+    "newSnowFullCm": 30,
+    "baseFullCm": 30,
+    "gustCloseKmh": 50,
+    "gustPenalty": 20,
+    "avalanchePenaltyFromLevel": 4,
+    "avalanchePenalty": 15
+  },
+  "splitboard": {
+    "weights": { "newSnow": 45, "quality": 15, "sun": 20, "base": 10, "calm": 10 },
+    "newSnowFullCm": 40,
+    "baseFullCm": 50,
+    "windPenaltyFromKmh": 35,
+    "windPenalty": 15,
+    "surfacePenalty": { "crust": 15, "wind-packed": 10, "wet": 15 },
+    "newSnowOnCrustPenalty": 20,
+    "avalanchePenaltyLevel": 3,
+    "avalanchePenalty": 20,
+    "avalancheExcludeFromLevel": 4,
+    "noBulletinPenalty": 10
+  },
+  "dog": {
+    "gates": {
+      "maxAvalancheLevel": 2,
+      "maxCloudPct": 40,
+      "maxWindKmh": 25,
+      "minTempC": -15,
+      "maxFreshCm": 15,
+      "settledAfterHours": 48,
+      "minBaseCm": 20
+    },
+    "weights": { "sun": 40, "calm": 20, "base": 20, "daysAfterStorm": 20 },
+    "baseFullCm": 40,
+    "bestDaysAfterStorm": { "from": 2, "to": 3 },
+    "noBulletinPenalty": 10
+  }
+}
