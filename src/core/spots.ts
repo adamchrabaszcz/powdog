@@ -47,7 +47,8 @@ export function catalogueProblems(catalogue: Catalogue): string[] {
       problems.push(`${spot.id}: avalanche region ${spot.avalanche.region} is not in feed ${spot.avalanche.feed}`);
     }
     for (const field of spot.verify ?? []) {
-      if (!(field in spot)) problems.push(`${spot.id}: verify lists unknown field "${field}"`);
+      // Own fields only: `in` would also accept inherited names like "toString".
+      if (!Object.hasOwn(spot, field)) problems.push(`${spot.id}: verify lists unknown field "${field}"`);
     }
   }
   return problems;

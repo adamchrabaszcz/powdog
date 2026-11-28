@@ -46,6 +46,10 @@ describe('the schema', () => {
   it('rejects webcam links that are not https', () => {
     expect(validate({ spots: [spot({ webcams: ['http://example.com/cam.jpg'] })] })).toBe(false);
   });
+
+  it('rejects webcam links with spaces', () => {
+    expect(validate({ spots: [spot({ webcams: ['https://example.com/my cam.jpg'] })] })).toBe(false);
+  });
 });
 
 describe('catalogueProblems', () => {
@@ -64,5 +68,9 @@ describe('catalogueProblems', () => {
 
   it('finds verify entries that name no field', () => {
     expect(catalogueProblems({ spots: [spot({ verify: ['nonsense'] })] })).toHaveLength(1);
+  });
+
+  it('does not accept inherited names in verify', () => {
+    expect(catalogueProblems({ spots: [spot({ verify: ['toString', 'constructor'] })] })).toHaveLength(2);
   });
 });

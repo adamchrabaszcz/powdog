@@ -45,7 +45,7 @@
           ]
         },
         "dogs": { "enum": ["allowed", "leash", "banned", "unknown"], "description": "Dog rules for the riding area (national parks differ)." },
-        "webcams": { "type": "array", "items": { "type": "string", "format": "uri", "pattern": "^https://" } },
+        "webcams": { "type": "array", "items": { "type": "string", "pattern": "^https://[^\\s]+$" } },
         "verify": {
           "type": "array",
           "items": { "type": "string" },

@@ -14,7 +14,7 @@
       "avalanche": null,
       "dogs": "leash",
       "webcams": [],
-      "verify": ["dogs", "webcams"]
+      "verify": ["avalanche", "dogs", "webcams"]
     },
     {
       "id": "sniezka-lomniczka",
@@ -29,7 +29,7 @@
       "avalanche": null,
       "dogs": "leash",
       "webcams": [],
-      "verify": ["dogs", "webcams"]
+      "verify": ["avalanche", "dogs", "webcams"]
     },
     {
       "id": "spindleruv-mlyn",
