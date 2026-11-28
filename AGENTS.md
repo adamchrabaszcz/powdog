@@ -49,6 +49,7 @@ npm test
 - **Units and time are explicit:** cm, °C, km/h, metres above sea level. Store UTC, show Europe/Warsaw.
 - **Config and data:** the spot catalogue and scoring weights live in versioned config files; personal data (homes, favourites, trips, ratings) lives in D1, always scoped by user.
 - **Portable core:** the model, scoring and snowpack code use no Cloudflare APIs. Users, storage and notifications each sit behind one interface.
+- **Modular code (`docs/adr/0011`):** one job per module and function, tunable settings passed in with defaults, one source per shape; split a file before it keeps growing.
 - GitHub Actions are pinned to a full commit SHA with the version in a comment.
 
 ## Code review
@@ -59,6 +60,7 @@ Claude reviews each pull request when it's opened or marked ready (`.github/work
 - **Missing or late data** (no bulletin, an API down) never crashes a run and is never shown as current.
 - **Safety:** avalanche information is never hidden, softened or shown out of date.
 - **Free budget:** new scheduled runs, KV writes or API calls are counted against the free limits.
+- **Modular code (`docs/adr/0011`):** a module or function doing several jobs, a hard-coded threshold that will be tuned, a shape written out twice, or I/O mixed into the core.
 - **Tests:** a change without a test that fails without it.
 - **No personal data or secrets** in code, tests, docs or examples.
 
