@@ -11,7 +11,8 @@ export interface WeatherHour {
   windKmh: number | null;
 }
 
-export type Surface = 'none' | 'powder' | 'wind-packed' | 'crust' | 'wet' | 'old';
+export const SURFACES = ['none', 'powder', 'wind-packed', 'crust', 'wet', 'old'] as const;
+export type Surface = (typeof SURFACES)[number];
 export type Quality = 'light' | 'medium' | 'heavy';
 
 /**
