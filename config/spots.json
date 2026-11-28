@@ -11,10 +11,10 @@
       "topElevationM": 1362,
       "baseElevationM": 690,
       "lifts": true,
-      "avalanche": { "feed": "CZ", "region": "CZ-04" },
+      "avalanche": null,
       "dogs": "leash",
       "webcams": [],
-      "verify": ["avalanche", "dogs", "webcams"]
+      "verify": ["dogs", "webcams"]
     },
     {
       "id": "sniezka-lomniczka",
@@ -26,10 +26,10 @@
       "topElevationM": 1603,
       "baseElevationM": 900,
       "lifts": false,
-      "avalanche": { "feed": "CZ", "region": "CZ-04" },
+      "avalanche": null,
       "dogs": "leash",
       "webcams": [],
-      "verify": ["avalanche", "dogs", "webcams"]
+      "verify": ["dogs", "webcams"]
     },
     {
       "id": "spindleruv-mlyn",

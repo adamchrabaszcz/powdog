@@ -21,7 +21,11 @@ describe('config/spots.json', () => {
 
   it('marks spots without a bulletin as null, never as a guessed region', () => {
     const noBulletin = catalogue.spots.filter((s) => s.avalanche === null).map((s) => s.id);
-    expect(noBulletin).toEqual(expect.arrayContaining(['czarna-gora', 'snieznik', 'pilsko', 'skrzyczne']));
+    // ADR 0004: Polish Karkonosze, Śnieżnik and the Beskids have no bulletin; the Czech one
+    // for the other side of the ridge is not borrowed.
+    expect(noBulletin).toEqual(
+      expect.arrayContaining(['szrenica', 'sniezka-lomniczka', 'czarna-gora', 'snieznik', 'pilsko', 'skrzyczne']),
+    );
   });
 });
 
