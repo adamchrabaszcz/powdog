@@ -50,8 +50,10 @@ export const SNOWPACK = {
   newSnowOnCrustCm: 5,
   /** Wind that packs fresh snow, km/h. */
   windPackingKmh: 30,
-  /** Settled density of old snow, kg/m³. */
+  /** Density old snow settles towards, kg/m³. */
   oldSnowDensity: 300,
+  /** How fast a layer settles: its density closes about 63% of the gap to old snow in this many hours. */
+  settlingHours: 240,
   /** New snow counts as fresh for this long, hours. */
   freshHours: 72,
 } as const;
@@ -63,6 +65,12 @@ export function freshDensity(temperatureC: number): number {
   if (temperatureC <= -2) return 120;
   if (temperatureC <= 0) return 180;
   return 250;
+}
+
+/** A layer's density after `ageHours`: it settles gradually from its fresh density towards old snow. */
+export function settledDensity(fresh: number, ageHours: number): number {
+  const gap = SNOWPACK.oldSnowDensity - fresh;
+  return gap <= 0 ? fresh : SNOWPACK.oldSnowDensity - gap * Math.exp(-ageHours / SNOWPACK.settlingHours);
 }
 
 function qualityOf(density: number): Quality {
@@ -107,7 +115,8 @@ export function buildSnowpack(hours: WeatherHour[]): Snowpack {
     if (t > 0) {
       lastThaw = i;
       thawRun++;
-      if (thawRun >= SNOWPACK.thawHoursForCrust) thawedSinceFreeze = true;
+      // A thaw only makes a crust where there's snow to thaw.
+      if (thawRun >= SNOWPACK.thawHoursForCrust && totalSwe() > 0) thawedSinceFreeze = true;
       // Melt from the top down.
       let melt = SNOWPACK.meltMmPerDegreeHour * t;
       while (melt > 0 && layers.length > 0) {
@@ -116,6 +125,11 @@ export function buildSnowpack(hours: WeatherHour[]): Snowpack {
         top.swe -= take;
         melt -= take;
         if (top.swe <= 1e-9) layers.pop();
+      }
+      // Melted out: any crust melted with it.
+      if (layers.length === 0) {
+        crustHour = null;
+        thawedSinceFreeze = false;
       }
     } else {
       thawRun = 0;
@@ -134,8 +148,8 @@ export function buildSnowpack(hours: WeatherHour[]): Snowpack {
 
   const newSnow72hCm = round(sumCm(fresh));
   const newSnow24hCm = round(sumCm(fresh.filter((l) => within(l.hour, 24))));
-  const oldSwe = layers.filter((l) => !fresh.includes(l)).reduce((s, l) => s + l.swe, 0);
-  const depthCm = round((oldSwe * 100) / SNOWPACK.oldSnowDensity + sumCm(fresh));
+  // New-snow amounts are as they fell; the depth uses each layer's settled density.
+  const depthCm = round(layers.reduce((s, l) => s + (l.swe * 100) / settledDensity(l.density, end - l.hour), 0));
 
   const onCrust = crustHour === null ? [] : layers.filter((l) => l.hour > crustHour!);
   const newSnowOnCrust = sumCm(onCrust) >= SNOWPACK.newSnowOnCrustCm;

@@ -46,6 +46,38 @@ describe('buildSnowpack', () => {
     expect(p.flags.newSnowOnCrust).toBe(false);
   });
 
+  it('a thaw on bare ground makes no crust, so the first snowfall is not flagged', () => {
+    const p = buildSnowpack(timed([...hours(24, { temperatureC: 6 }), ...hours(20, { temperatureC: -6, snowfallCm: 1 })]));
+    expect(p.flags.crust).toBe(false);
+    expect(p.flags.newSnowOnCrust).toBe(false);
+  });
+
+  it('a crust that melted out with the snow is gone when new snow falls', () => {
+    const p = buildSnowpack(
+      timed([
+        ...hours(10, { temperatureC: -5, snowfallCm: 1 }),
+        ...hours(6, { temperatureC: 3 }),
+        ...hours(6, { temperatureC: -4 }), // crust forms
+        ...hours(72, { temperatureC: 8 }), // and melts out with everything else
+        ...hours(20, { temperatureC: -6, snowfallCm: 1 }),
+      ]),
+    );
+    expect(p.flags.crust).toBe(false);
+    expect(p.flags.newSnowOnCrust).toBe(false);
+  });
+
+  it('a cold dump settles gradually and still makes a base four days later', () => {
+    const p = buildSnowpack(timed([...hours(20, { temperatureC: -12, snowfallCm: 1 }), ...hours(96, { temperatureC: -12 })]));
+    expect(p.depthCm).toBeGreaterThan(8);
+    expect(p.surface).toBe('old');
+  });
+
+  it('settling has no jump at 72 hours', () => {
+    const at = (h: number) =>
+      buildSnowpack(timed([...hours(10, { temperatureC: -8, snowfallCm: 2 }), ...hours(h, { temperatureC: -8 })])).depthCm;
+    expect(at(61) - at(63)).toBeLessThan(0.5);
+  });
+
   it('rain on the snow is flagged and the surface is wet', () => {
     const p = buildSnowpack(timed([...base(), ...hours(6, { temperatureC: 2, rainMm: 1 })]));
     expect(p.flags.rainOnSnow).toBe(true);
