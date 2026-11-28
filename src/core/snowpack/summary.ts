@@ -46,7 +46,7 @@ export function crustFlags(w: Pick<Walk, 'crustHour' | 'layers'>, s: SnowpackSet
   return { crust: onCrust < s.crustBuriedCm, newSnowOnCrust: onCrust >= s.newSnowOnCrustCm };
 }
 
-/** Wind strong enough to pack snow during or after the fresh snowfall. A missing wind value is a gap, not calm. */
+/** Wind strong enough to pack snow during or after the fresh snowfall. A missing wind value can't set the flag; it's counted in `gaps.wind`. */
 export function windPacked(fresh: Layer[], hours: WeatherHour[], s: SnowpackSettings): boolean {
   const first = fresh[0];
   return first !== undefined && hours.slice(first.hour).some((h) => (h.windKmh ?? 0) >= s.windPackingKmh);

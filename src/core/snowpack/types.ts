@@ -14,11 +14,14 @@ export interface WeatherHour {
 export type Surface = 'none' | 'powder' | 'wind-packed' | 'crust' | 'wet' | 'old';
 export type Quality = 'light' | 'medium' | 'heavy';
 
-/** Hours without a value, per input. Never guessed: a gap is reported, not read as a dry or calm hour. */
+/**
+ * Hours without a value, per input; each hour is counted at most once, so the counts add up.
+ * Never guessed: a gap is reported, not read as a dry or calm hour.
+ */
 export interface Gaps {
-  /** Hours with no temperature are skipped entirely. */
+  /** Hours with no temperature: skipped entirely, and counted only here even if other values are missing too. */
   temperature: number;
-  /** The others add no snow, rain or wind for that hour, and are counted here. */
+  /** Hours that do have a temperature but miss this value: they add no snow, rain or wind. */
   snowfall: number;
   rain: number;
   wind: number;

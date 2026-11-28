@@ -46,8 +46,12 @@ function step(state: State, h: WeatherHour, i: number, s: SnowpackSettings): voi
   else freeze(state, t, i, s);
 }
 
+/** Counts each missing hour once: an hour without a temperature is skipped and counted only there. */
 export function countGaps(gaps: Gaps, h: WeatherHour): void {
-  if (h.temperatureC === null) gaps.temperature++;
+  if (h.temperatureC === null) {
+    gaps.temperature++;
+    return;
+  }
   if (h.snowfallCm === null) gaps.snowfall++;
   if (h.rainMm === null) gaps.rain++;
   if (h.windKmh === null) gaps.wind++;

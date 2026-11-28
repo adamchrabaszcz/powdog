@@ -120,6 +120,12 @@ describe('buildSnowpack', () => {
     expect(p.gaps).toEqual({ temperature: 0, snowfall: 6, rain: 0, wind: 0 });
   });
 
+  it('counts an all-null hour (an outage) once, under temperature', () => {
+    const outage = { temperatureC: null, snowfallCm: null, rainMm: null, windKmh: null };
+    const p = buildSnowpack(timed([...base(), ...hours(4, outage)]));
+    expect(p.gaps).toEqual({ temperature: 4, snowfall: 0, rain: 0, wind: 0 });
+  });
+
   it('counts rain and wind gaps too, so a missing value is not read as dry or calm', () => {
     const p = buildSnowpack(timed([...base(), ...hours(6, { temperatureC: 2, rainMm: null, windKmh: null })]));
     expect(p.gaps.rain).toBe(6);
