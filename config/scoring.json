@@ -36,7 +36,7 @@
     },
     "weights": { "sun": 40, "calm": 20, "base": 20, "daysAfterStorm": 20 },
     "baseFullCm": 40,
-    "bestDaysAfterStorm": { "from": 2, "to": 3 },
+    "bestDaysAfterStorm": { "from": 2, "until": 4 },
     "noBulletinPenalty": 10
   }
 }

@@ -12,6 +12,7 @@ import { walk } from './walk.ts';
 
 export { DEFAULT_SNOWPACK, freshDensity, qualityOf, settledDensity } from './settings.ts';
 export type { SnowpackSettings } from './settings.ts';
+export { SURFACES } from './types.ts';
 export type { Gaps, Quality, Snowpack, Surface, WeatherHour } from './types.ts';
 
 /** Builds the snowpack at the end of `hours` (oldest first). Override any setting to tune or test. */

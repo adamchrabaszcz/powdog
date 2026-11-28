@@ -14,8 +14,6 @@ export interface DaytimeWeather {
   gustMaxKmh: number | null;
   cloudMeanPct: number | null;
   tempMinC: number | null;
-  /** How far apart the models are on snowfall for the day, cm (max − min of their totals). */
-  snowSpreadCm: number | null;
 }
 
 /** Everything scoring needs about one spot on one day. Built by the pipeline; scoring only reads it. */
@@ -30,6 +28,11 @@ export interface SpotDay {
   /** Hours since the last snowfall worth counting at 08:00, or null if none in the window. */
   hoursSinceSnowfall: number | null;
   daytime: DaytimeWeather;
+  /**
+   * How far apart the models are on the snow the score counts: the 72 h up to 08:00 that morning,
+   * max − min of their totals, cm. null when fewer than two models cover that window.
+   */
+  snowSpreadCm: number | null;
   /** EAWS danger level 1–5 for the day, or null where the spot has no bulletin. */
   avalancheLevel: number | null;
 }
@@ -43,6 +46,8 @@ export interface Score {
   /** A hard rule failed; `reasons` says which. */
   excluded: boolean;
   confidence: Confidence;
-  /** Plain words, in order of weight, e.g. "28 cm new snow, light". */
+  /** The day's avalanche danger (null: no bulletin), on every score, excluded or not, so no view can drop it. */
+  avalancheLevel: number | null;
+  /** Plain words: the exclusion if any, then the avalanche note, then the rest by weight. */
   reasons: string[];
 }

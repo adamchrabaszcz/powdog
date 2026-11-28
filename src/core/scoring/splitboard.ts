@@ -1,7 +1,7 @@
 // Splitboard touring (rule 6): deep light snow, sun, little ridge wind, a sound snowpack;
 // avalanche danger weighs heavily.
 
-import { add, exclude, fraction, sunniness, type Tally, tally } from './parts.ts';
+import { add, avalancheNote, exclude, fraction, note, sunniness, type Tally, tally } from './parts.ts';
 import type { ScoringSettings } from './settings.ts';
 import type { SpotDay } from './types.ts';
 
@@ -9,6 +9,7 @@ export function scoreSplitboard(d: SpotDay, s: ScoringSettings): Tally {
   const c = s.splitboard;
   const t = tally();
   const p = d.snowpack;
+  note(t, avalancheNote(d.avalancheLevel));
 
   if (d.avalancheLevel !== null && d.avalancheLevel >= c.avalancheExcludeFromLevel) {
     exclude(t, `avalanche danger ${d.avalancheLevel}: not a touring day`);
@@ -28,8 +29,7 @@ export function scoreSplitboard(d: SpotDay, s: ScoringSettings): Tally {
   if (surfacePenalty) add(t, -surfacePenalty, `surface: ${p.surface}`);
   if (p.flags.newSnowOnCrust) add(t, -c.newSnowOnCrustPenalty, 'new snow on a crust: poor bonding, avalanche warning sign');
 
-  if (d.avalancheLevel === null) add(t, -c.noBulletinPenalty, 'no avalanche bulletin here: judge the snowpack yourself');
-  else if (d.avalancheLevel >= c.avalanchePenaltyLevel) add(t, -c.avalanchePenalty, `avalanche danger ${d.avalancheLevel}: choose low-angle terrain`);
-  else add(t, 0, `avalanche danger ${d.avalancheLevel}`);
+  if (d.avalancheLevel === null) add(t, -c.noBulletinPenalty, 'no bulletin: less certain');
+  else if (d.avalancheLevel >= c.avalanchePenaltyLevel) add(t, -c.avalanchePenalty, 'considerable danger: choose low-angle terrain');
   return t;
 }

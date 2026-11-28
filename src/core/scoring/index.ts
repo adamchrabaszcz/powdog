@@ -8,7 +8,8 @@ import { DEFAULT_SCORING, type ScoringSettings } from './settings.ts';
 import { scoreSplitboard } from './splitboard.ts';
 import type { Mode, Score, SpotDay } from './types.ts';
 
-export { blend, daytimeHours, daytimeWeather, localTime } from './day.ts';
+export { SPREAD_WINDOW_HOURS, blend, daytimeHours, daytimeWeather, localise, localTime, snowSpreadCm } from './day.ts';
+export type { LocalHour } from './day.ts';
 export { DEFAULT_SCORING, withOverrides } from './settings.ts';
 export type { ScoringSettings } from './settings.ts';
 export { MODES } from './types.ts';
@@ -21,7 +22,14 @@ const byMode: Record<Mode, (d: SpotDay, s: ScoringSettings) => Tally> = {
 };
 
 export function scoreDay(d: SpotDay, mode: Mode, s: ScoringSettings = DEFAULT_SCORING): Score {
-  return { spotId: d.spot.id, date: d.date, mode, confidence: confidenceOf(d.daytime, s), ...result(byMode[mode](d, s)) };
+  return {
+    spotId: d.spot.id,
+    date: d.date,
+    mode,
+    confidence: confidenceOf(d.snowSpreadCm, s),
+    avalancheLevel: d.avalancheLevel,
+    ...result(byMode[mode](d, s)),
+  };
 }
 
 /** The best spots for a mode, highest score first; excluded spots last, with their reasons. */

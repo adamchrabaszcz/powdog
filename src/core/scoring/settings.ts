@@ -44,7 +44,8 @@ export interface ScoringSettings {
     };
     weights: { sun: number; calm: number; base: number; daysAfterStorm: number };
     baseFullCm: number;
-    bestDaysAfterStorm: { from: number; to: number };
+    /** Days since the snowfall that score best: from `from` (inclusive) until `until` (exclusive), so 2–4 means days 2 and 3. */
+    bestDaysAfterStorm: { from: number; until: number };
     noBulletinPenalty: number;
   };
 }

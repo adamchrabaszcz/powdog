@@ -20,10 +20,11 @@ const day = (id: string, over: Partial<Omit<SpotDay, 'spot'>> & { spot?: Partial
   weekday: 6,
   hoursSinceSnowfall: null,
   avalancheLevel: 2,
+  snowSpreadCm: 2,
   ...over,
   spot: { id, name: id, lifts: true, dogs: 'leash', ...over.spot },
   snowpack: over.snowpack ?? snowpack(),
-  daytime: { windMaxKmh: 10, gustMaxKmh: 20, cloudMeanPct: 20, tempMinC: -6, snowSpreadCm: 2, ...over.daytime },
+  daytime: { windMaxKmh: 10, gustMaxKmh: 20, cloudMeanPct: 20, tempMinC: -6, ...over.daytime },
 });
 
 const powder = snowpack({ newSnow24hCm: 30, newSnow72hCm: 30, newSnowQuality: 'light', surface: 'powder' });
@@ -36,7 +37,7 @@ describe('lift mode', () => {
 
   it('excludes spots without lifts', () => {
     const s = scoreDay(day('touring-only', { spot: { lifts: false }, snowpack: powder }), 'lift');
-    expect(s).toMatchObject({ excluded: true, score: 0, reasons: ['no lifts here'] });
+    expect(s).toMatchObject({ excluded: true, score: 0, reasons: ['no lifts here', 'avalanche danger 2'] });
   });
 
   it('marks strong gusts down: lifts may close', () => {
@@ -92,15 +93,19 @@ describe('dog mode', () => {
     ['cloudy', { daytime: { cloudMeanPct: 70 } as SpotDay['daytime'] }, /not sunny enough/],
     ['windy', { daytime: { windMaxKmh: 35 } as SpotDay['daytime'] }, /too windy/],
     ['very cold', { daytime: { tempMinC: -20 } as SpotDay['daytime'] }, /too cold/],
+    ['no temperature data', { daytime: { tempMinC: null } as SpotDay['daytime'] }, /no temperature data/],
     ['deep fresh snow', { snowpack: powder, hoursSinceSnowfall: 2 }, /too deep for the dog/],
+    // 40 cm that stopped 30 h ago: nothing in the last 24 h, but not settled yet either.
+    ['a deep storm 30 h ago', { snowpack: snowpack({ depthCm: 60, newSnow24hCm: 0, newSnow72hCm: 40 }), hoursSinceSnowfall: 30 }, /not settled yet/],
   ])('excludes a day that fails a hard rule: %s', (_label, over, reason) => {
     const s = scoreDay(good('a', over), 'dog');
     expect(s.excluded).toBe(true);
     expect(s.reasons[0]).toMatch(reason);
   });
 
-  it('allows deep snow once it has settled for 48 hours on a base', () => {
-    expect(scoreDay(good('a', { snowpack: snowpack({ depthCm: 60, newSnow24hCm: 20, newSnow72hCm: 30 }), hoursSinceSnowfall: 50 }), 'dog').excluded).toBe(false);
+  it('allows the same deep storm once it has settled for 48 hours on a base', () => {
+    const settledStorm = snowpack({ depthCm: 60, newSnow24hCm: 0, newSnow72hCm: 40 });
+    expect(scoreDay(good('a', { snowpack: settledStorm, hoursSinceSnowfall: 50 }), 'dog').excluded).toBe(false);
   });
 
   it('likes two to three days after a storm best', () => {
@@ -119,6 +124,28 @@ describe('dog mode', () => {
   });
 });
 
+describe('avalanche information is never dropped', () => {
+  it.each(['lift', 'splitboard', 'dog'] as const)('%s: every score carries the level, and its note comes first', (mode) => {
+    const s = scoreDay(day('a', { snowpack: powder, avalancheLevel: 3 }), mode);
+    expect(s.avalancheLevel).toBe(3);
+    const at = s.excluded ? 1 : 0;
+    expect(s.reasons[at]).toBe('avalanche danger 3');
+  });
+
+  it('keeps the avalanche note on an excluded score', () => {
+    const s = scoreDay(day('a', { spot: { lifts: false }, avalancheLevel: 3 }), 'lift');
+    expect(s).toMatchObject({ excluded: true, avalancheLevel: 3, reasons: ['no lifts here', 'avalanche danger 3'] });
+  });
+
+  it('says so when there is no bulletin, in every mode', () => {
+    for (const mode of ['lift', 'splitboard', 'dog'] as const) {
+      const s = scoreDay(day('a', { snowpack: powder, avalancheLevel: null }), mode);
+      expect(s.avalancheLevel).toBeNull();
+      expect(s.reasons.join(' | ')).toMatch(/no avalanche bulletin here/);
+    }
+  });
+});
+
 describe('ranking and settings', () => {
   it('puts excluded spots last', () => {
     const ranked = rank([day('banned', { spot: { lifts: false } }), day('ok')], 'lift');
@@ -127,8 +154,9 @@ describe('ranking and settings', () => {
 
   it('reports confidence from the model spread', () => {
     expect(scoreDay(day('a'), 'lift').confidence).toBe('high');
-    expect(scoreDay(day('a', { daytime: { snowSpreadCm: 12 } as SpotDay['daytime'] }), 'lift').confidence).toBe('medium');
-    expect(scoreDay(day('a', { daytime: { snowSpreadCm: 25 } as SpotDay['daytime'] }), 'lift').confidence).toBe('low');
+    expect(scoreDay(day('a', { snowSpreadCm: 12 }), 'lift').confidence).toBe('medium');
+    expect(scoreDay(day('a', { snowSpreadCm: 25 }), 'lift').confidence).toBe('low');
+    expect(scoreDay(day('a', { snowSpreadCm: null }), 'lift').confidence).toBe('low');
   });
 
   it('takes settings, so weights can be tuned without editing code', () => {

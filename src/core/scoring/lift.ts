@@ -1,12 +1,13 @@
 // Lift-served powder (rule 5): fresh snow and its quality first, a base, lifts able to run.
 
-import { add, exclude, fraction, sunniness, type Tally, tally } from './parts.ts';
+import { add, avalancheNote, exclude, fraction, note, sunniness, type Tally, tally } from './parts.ts';
 import type { ScoringSettings } from './settings.ts';
 import type { SpotDay } from './types.ts';
 
 export function scoreLift(d: SpotDay, s: ScoringSettings): Tally {
   const c = s.lift;
   const t = tally();
+  note(t, avalancheNote(d.avalancheLevel));
   if (!d.spot.lifts) exclude(t, 'no lifts here');
 
   const p = d.snowpack;
@@ -21,9 +22,7 @@ export function scoreLift(d: SpotDay, s: ScoringSettings): Tally {
   const gust = d.daytime.gustMaxKmh;
   if (gust !== null && gust > c.gustCloseKmh) add(t, -c.gustPenalty, `gusts ${Math.round(gust)} km/h: lifts may close`);
   if (d.avalancheLevel !== null && d.avalancheLevel >= c.avalanchePenaltyFromLevel) {
-    add(t, -c.avalanchePenalty, `avalanche danger ${d.avalancheLevel}: stay on the pistes`);
-  } else if (d.avalancheLevel !== null) {
-    add(t, 0, `avalanche danger ${d.avalancheLevel} off-piste`);
+    add(t, -c.avalanchePenalty, 'high avalanche danger: stay on the pistes');
   }
   return t;
 }
