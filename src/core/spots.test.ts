@@ -2,7 +2,7 @@ import { Ajv2020 } from 'ajv/dist/2020.js';
 import { describe, expect, it } from 'vitest';
 import catalogueJson from '../../config/spots.json' with { type: 'json' };
 import schema from '../../config/spots.schema.json' with { type: 'json' };
-import { type Catalogue, type Spot, catalogueProblems } from './spots.ts';
+import { COUNTRIES, DOG_RULES, SPOT_FIELDS, type Catalogue, type Spot, catalogueProblems } from './spots.ts';
 
 const validate = new Ajv2020({ allErrors: true, strict: false }).compile(schema);
 const catalogue = catalogueJson as Catalogue;
@@ -26,6 +26,19 @@ describe('config/spots.json', () => {
     expect(noBulletin).toEqual(
       expect.arrayContaining(['szrenica', 'sniezka-lomniczka', 'czarna-gora', 'snieznik', 'pilsko', 'skrzyczne']),
     );
+  });
+});
+
+describe('one source of truth: the TypeScript lists match the schema', () => {
+  const spotSchema = schema.$defs.spot;
+  it('has the same fields', () => {
+    expect([...SPOT_FIELDS].sort()).toEqual(Object.keys(spotSchema.properties).sort());
+  });
+  it('has the same countries', () => {
+    expect([...COUNTRIES]).toEqual(spotSchema.properties.country.enum);
+  });
+  it('has the same dog rules', () => {
+    expect([...DOG_RULES]).toEqual(spotSchema.properties.dogs.enum);
   });
 });
 

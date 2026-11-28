@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { type WeatherHour, buildSnowpack, freshDensity } from './snowpack.ts';
+import { type WeatherHour, buildSnowpack, freshDensity } from './index.ts';
 
 /** Fixed-weather builder: `n` hours of the same weather. */
 function hours(n: number, w: Partial<Omit<WeatherHour, 'time'>>): WeatherHour[] {
@@ -68,7 +68,7 @@ describe('buildSnowpack', () => {
 
   it('a cold dump settles gradually and still makes a base four days later', () => {
     const p = buildSnowpack(timed([...hours(20, { temperatureC: -12, snowfallCm: 1 }), ...hours(96, { temperatureC: -12 })]));
-    expect(p.depthCm).toBeGreaterThan(8);
+    expect(p.depthCm).toBeGreaterThan(6); // clear of the 5 cm "none" line, without pinning the settling rate
     expect(p.surface).toBe('old');
   });
 
@@ -111,14 +111,25 @@ describe('buildSnowpack', () => {
 
   it('skips hours without a temperature and counts them, instead of guessing', () => {
     const p = buildSnowpack(timed([...base(), ...hours(5, { temperatureC: null, snowfallCm: 10 })]));
-    expect(p.missingHours).toBe(5);
+    expect(p.gaps.temperature).toBe(5);
     expect(p.newSnow72hCm).toBe(0);
   });
 
   it('counts hours without a snowfall value, so a gap is not read as a dry spell', () => {
     const p = buildSnowpack(timed([...base(), ...hours(6, { temperatureC: -5, snowfallCm: null })]));
-    expect(p.missingSnowfallHours).toBe(6);
-    expect(p.missingHours).toBe(0);
+    expect(p.gaps).toEqual({ temperature: 0, snowfall: 6, rain: 0, wind: 0 });
+  });
+
+  it('counts rain and wind gaps too, so a missing value is not read as dry or calm', () => {
+    const p = buildSnowpack(timed([...base(), ...hours(6, { temperatureC: 2, rainMm: null, windKmh: null })]));
+    expect(p.gaps.rain).toBe(6);
+    expect(p.gaps.wind).toBe(6);
+  });
+
+  it('takes settings, so a rule can be tuned without editing the code', () => {
+    const storm = timed([...base(), ...hours(20, { temperatureC: -7, snowfallCm: 1.25, windKmh: 45 })]);
+    expect(buildSnowpack(storm).flags.windPacked).toBe(true);
+    expect(buildSnowpack(storm, { windPackingKmh: 60 }).flags.windPacked).toBe(false);
   });
 
   it('snow older than 72 hours counts as base, not new snow', () => {

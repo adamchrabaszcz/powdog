@@ -1,8 +1,13 @@
 // The shared spot catalogue (config/spots.json). The JSON Schema checks each entry's shape;
 // these checks cover what a schema can't: relations between fields and across spots.
+//
+// One source of truth (ADR 0011): the allowed values and field names below are the lists the
+// types are built from, and spots.test.ts checks they match the JSON Schema exactly.
 
-export type Country = 'PL' | 'CZ' | 'SK' | 'AT' | 'CH' | 'IT' | 'FR' | 'DE';
-export type DogRule = 'allowed' | 'leash' | 'banned' | 'unknown';
+export const COUNTRIES = ['PL', 'CZ', 'SK', 'AT', 'CH', 'IT', 'FR', 'DE'] as const;
+export const DOG_RULES = ['allowed', 'leash', 'banned', 'unknown'] as const;
+export type Country = (typeof COUNTRIES)[number];
+export type DogRule = (typeof DOG_RULES)[number];
 
 export interface AvalancheRegion {
   /** The EAWS feed file, e.g. "CZ", "PL-12", "AT-04". */
@@ -32,6 +37,17 @@ export interface Spot {
 export interface Catalogue {
   spots: Spot[];
 }
+
+/** Every field of a spot, checked against the schema's properties in the tests. */
+export const SPOT_FIELDS = [
+  'id', 'name', 'country', 'range', 'lat', 'lon', 'topElevationM', 'baseElevationM',
+  'lifts', 'avalanche', 'dogs', 'webcams', 'verify',
+] as const satisfies readonly (keyof Spot)[];
+
+// Compile-time check the other way round: a field added to `Spot` but not to the list fails here.
+type MissingFromList = Exclude<keyof Spot, (typeof SPOT_FIELDS)[number]>;
+const _everyFieldListed: [MissingFromList] extends [never] ? true : MissingFromList = true;
+void _everyFieldListed;
 
 /** Problems the schema can't see. Returns an empty list when the catalogue is consistent. */
 export function catalogueProblems(catalogue: Catalogue): string[] {
