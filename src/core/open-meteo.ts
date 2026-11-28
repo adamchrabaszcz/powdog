@@ -9,17 +9,17 @@ export const ENSEMBLE_URL = 'https://ensemble-api.open-meteo.com/v1/ensemble';
 
 export type Model = 'ecmwf_ifs025' | 'gfs_seamless' | 'icon_d2';
 
-/** Hourly variables powdog uses. Units as Open-Meteo returns them: cm, °C, km/h, m, %, mm, s. */
+/** Hourly variables powdog uses, in the units Open-Meteo returns. The parser passes values through unchanged. */
 export type Variable =
-  | 'snowfall'
-  | 'rain'
-  | 'temperature_2m'
-  | 'wind_speed_10m'
-  | 'wind_gusts_10m'
-  | 'freezing_level_height'
-  | 'cloud_cover'
-  | 'snow_depth'
-  | 'sunshine_duration';
+  | 'snowfall' // cm
+  | 'rain' // mm
+  | 'temperature_2m' // °C
+  | 'wind_speed_10m' // km/h
+  | 'wind_gusts_10m' // km/h
+  | 'freezing_level_height' // m above sea level
+  | 'cloud_cover' // %
+  | 'snow_depth' // METRES, not cm: convert with metresToCm (units.ts)
+  | 'sunshine_duration'; // seconds per hour
 
 export interface Location {
   id: string;
@@ -142,14 +142,22 @@ function checkElevation(raw: RawLocation, loc: Location, problems: string[]): vo
   }
 }
 
-/** Reads one series; reports a missing key, an empty series and partial gaps. */
+/**
+ * Reads one series as exactly `hours` values; reports a missing key, a length that doesn't match
+ * the times (padded with null or trimmed, so indexing by hour is always safe), an empty series
+ * and partial gaps.
+ */
 function column(raw: RawLocation, key: string, hours: number, label: string, problems: string[]): Values {
   const col = raw.hourly?.[key];
   if (!Array.isArray(col)) {
     problems.push(`${label} is missing`);
     return Array<number | null>(hours).fill(null);
   }
-  const values = (col as unknown[]).map((v) => (typeof v === 'number' ? v : null));
+  if (col.length !== hours) problems.push(`${label} has ${col.length} values for ${hours} hours`);
+  const values = Array.from({ length: hours }, (_, i) => {
+    const v: unknown = col[i];
+    return typeof v === 'number' ? v : null;
+  });
   const gaps = values.filter((v) => v === null).length;
   if (gaps === values.length) problems.push(`${label} is empty`);
   else if (gaps > 0) problems.push(`${label} has ${gaps} of ${values.length} hours missing`);

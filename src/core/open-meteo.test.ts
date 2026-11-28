@@ -101,6 +101,16 @@ describe('parseForecast', () => {
     expect(r.problems).toEqual(['praded: snowfall from gfs_seamless has 1 of 2 hours missing']);
   });
 
+  it.each([
+    ['short', [1], [1, null], ['praded: snowfall from gfs_seamless has 1 values for 2 hours', 'praded: snowfall from gfs_seamless has 1 of 2 hours missing']],
+    ['long', [1, 2, 3], [1, 2], ['praded: snowfall from gfs_seamless has 3 values for 2 hours']],
+  ])('fits a %s series to the times and reports it', (_label, snowfall, expected, expectedProblems) => {
+    const raw = { hourly: { time: ['2026-11-27T00:00', '2026-11-27T01:00'], snowfall } };
+    const r = parseForecast(raw, { locations: [locations[0]!], variables: ['snowfall'], models: ['gfs_seamless'], forecastDays: 1 });
+    expect(r.series[0]!.values.gfs_seamless?.snowfall).toEqual(expected);
+    expect(r.problems).toEqual(expectedProblems);
+  });
+
   it('reports an Open-Meteo error and returns no series', () => {
     const r = parseForecast({ error: true, reason: 'Parameter elevation is out of range' }, forecastQuery);
     expect(r.series).toEqual([]);
